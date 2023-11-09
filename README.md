@@ -7,9 +7,9 @@ We developed DMMO, a method to identify cancer driver modules based on multi-omi
 How to use
 --------------------------------------
 ## Data processing
-1.Data_PCA.py: The input is the gene expression matrix 
+1.Data_PCA.py: The dimension of gene expression data is reduced by principal component analysis
 
-input:RNA_exp.csv 
+input:RNA_exp.csv The input is the gene expression matrix 
 
 output: exp_pca.csv
 
