@@ -7,8 +7,10 @@ We developed DMMO, a method to identify cancer driver modules based on multi-omi
 How to use
 --------------------------------------
 1.Data_PCA.py: The input is the gene expression matrix 
-input: RNA_exp.csv 
-output: exp_pca.csv
+input:
+RNA_exp.csv 
+output: 
+exp_pca.csv
 
 2.Data_GAE.py: GAE Feature learning for PPI networks
 input: The input is the gene expression matrix and the corresponding PPI edge relationship (maximal connected graph).
@@ -30,6 +32,6 @@ output：
 ③ p_mergeModul_%K.txt  Merged modules according to different K values
 ④ com.txt && score.txt  Modules of different sizes are merged, and the collection file of the module and the score value corresponding to the module are output
 
-5. Module_analysis.py: Reorder the set of modules based on their size and score
+5.Module_analysis.py: Reorder the set of modules based on their size and score
 input: score_p10.txt com_p10.txt
 output: p10_4_DMMO.txt
