@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 
 
-
+# reg dict
 def reg_save():
     gene_set = set()
     trrust = np.loadtxt("data/TRRUST.txt", delimiter='\t', dtype=str)
@@ -45,7 +45,6 @@ def pageRank_cal():
         G.add_edge(edges_file[i][1], edges_file[i][0])
 
     pageRank_list = nx.pagerank(G, alpha=1)
-    # print("pageRank值是：", pageRank_list)
     print(len(pageRank_list))
     print(type(pageRank_list))
 
@@ -73,7 +72,7 @@ def pageRank_cal():
 # pageRank_cal()
 
 
-def node_coReg():
+def coRegCal():
     b_set = np.loadtxt('data/coReg/reg_name.csv', delimiter='\t', dtype=str)
     # b_set = np.loadtxt('data/reg_name.txt',delimiter='\t',dtype=str)
     print(b_set.shape)
@@ -112,16 +111,18 @@ def node_coReg():
                 for b_item in b:
                     for n in range(node_pagerank.shape[0]):
                         if node_pagerank[n][0] == b_item:
+                            # c_node.append(node_pagerank[n][0])
                             b_weight.append(float(node_pagerank[n][1]))
                 for m in c:
                     for n in range(node_pagerank.shape[0]):
                         if node_pagerank[n][0] == m:
+                            # c_node.append(node_pagerank[n][0])
                             c_weight.append(float(node_pagerank[n][1]))
 
                 if len(c_weight) != 0:
                     coReg_list.append([b_set[i], b_set[j],2 * sum(c_weight) / (sum(a_weight) + sum(b_weight)) * (a_rank * b_rank) ** (1 / 2)])
+    # print(coReg_list)
     print(len(coReg_list))
-    np.savetxt('data/coReg/node_coReg.txt', np.array(coReg_list), delimiter='\t', fmt='%s')
+    np.savetxt('data/node_coReg.txt', np.array(coReg_list), delimiter='\t', fmt='%s')
 
-# node_coReg()
-
+# coRegCal()

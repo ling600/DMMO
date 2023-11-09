@@ -92,7 +92,7 @@ def load_data(data1, data2):
     labels = torch.LongTensor(np.where(labels)[1])
     adj = sparse_mx_to_torch_sparse_tensor(adj)
 
-    print("数据加载成功...")
+    print("Data loaded successfully...")
 
     return adj, features, labels
 
@@ -126,15 +126,6 @@ def dot_product_decode(Z):
     return A_pred
 
 
-input_dim = 789
-hidden1_dim = 200
-hidden2_dim = 50
-use_feature = True
-
-num_epoch = 200
-learning_rate = 0.0001
-
-
 class GAE(nn.Module):
     def __init__(self, adj):
         super(GAE, self).__init__()
@@ -163,36 +154,45 @@ class GAE(nn.Module):
         A_pred = dot_product_decode(Z)
         return result, A_pred, out_file
 
-model = GAE(adj)
-# model.load_state_dict(torch.load('BRCA/GAE/gae.pth'))
+def Running_ppi_gae():
 
-# model = GAE(adj)
-optimizer = Adam(model.parameters(), lr=learning_rate)
+    adj, features, labels = load_data(data1="data/gae_RNA_MaxMin.csv",
+                                      data2="data/gae_edges.txt")
 
-torch.save(model.state_dict(), 'data/gae.pth')
+    input_dim = 789
+    hidden1_dim = 200
+    hidden2_dim = 50
+    use_feature = True
+    num_epoch = 200
+    learning_rate = 0.0001
 
-for epoch in range(num_epoch):
-    t = time.time()
+    model = GAE(adj)
+    optimizer = Adam(model.parameters(), lr=learning_rate)
 
-    feature_pre, A_pred, output = model(features)
-    optimizer.zero_grad()
+    torch.save(model.state_dict(), 'data/gae.pth')
 
-    loss_struct = F.binary_cross_entropy(A_pred.view(-1), adj.to_dense().view(-1))
+    for epoch in range(num_epoch):
+        t = time.time()
 
-    loss_feature = F.mse_loss(feature_pre, features)
+        feature_pre, A_pred, output = model(features)
+        optimizer.zero_grad()
 
-    loss = loss_feature + loss_struct
+        loss_struct = F.binary_cross_entropy(A_pred.view(-1), adj.to_dense().view(-1))
 
-    loss.backward()
-    optimizer.step()
+        loss_feature = F.mse_loss(feature_pre, features)
 
-    print("Epoch:", '%04d' % (epoch + 1),
-          "train_loss=", "{:.5f}".format(loss.item()),
-          "features_loss=", "{:.5f}".format(loss_feature),
-          "struct_loss=", "{:.5f}".format(loss_struct),
-          "time=", "{:.5f}".format(time.time() - t))
+        loss = loss_feature + loss_struct
 
-    if ((epoch + 1) % 5 == 0):
-        print(output.detach().numpy().shape)
-        np.savetxt('data/ppi_gae_%s_%s.csv' % ((epoch + 1), loss.data), output.detach().numpy(),
-                   delimiter=',')
+        loss.backward()
+        optimizer.step()
+
+        print("Epoch:", '%04d' % (epoch + 1),
+              "train_loss=", "{:.5f}".format(loss.item()),
+              "features_loss=", "{:.5f}".format(loss_feature),
+              "struct_loss=", "{:.5f}".format(loss_struct),
+              "time=", "{:.5f}".format(time.time() - t))
+
+        if ((epoch + 1) % 5 == 0):
+            print(output.detach().numpy().shape)
+            np.savetxt('data/ppi_gae_%s_%s.csv' % ((epoch + 1), loss.data), output.detach().numpy(),
+                       delimiter=',')
